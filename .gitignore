@@ -1,0 +1,63 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+.envrc
+.aws/
+credentials*
+*oauth*.json
+*token*.json
+*.pem
+*.key
+
+# Environments and Python caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Saved adventures, OAuth refresh credentials, and SQLite sidecars
+data/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+
+# Local OS files, logs, and distributable archives
+.DS_Store
+*.log
+*.tar.gz
+*.zip
+
+# Recordings and other local media captures
+recordings/
+captures/
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.avi
+*.flv
+*.m4v
+*.mp3
+*.wav
+
+# Other archive formats
+*.tar
+*.tgz
+*.gz
+*.bz2
+*.xz
+*.7z
+*.rar
+
+# Alternate local credential exports
+*token*.yaml
+*token*.yml
+*token*.txt
+*oauth*.yaml
+*oauth*.yml
+*oauth*.txt
