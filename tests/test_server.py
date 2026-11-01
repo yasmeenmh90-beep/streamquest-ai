@@ -27,11 +27,11 @@ class ServerTests(unittest.IsolatedAsyncioTestCase):
   self.assertEqual((await self.c.post('/api/action',json={'action':'open','version':1})).status,401)
  async def test_origin_rejected_and_static(self):
   self.assertEqual((await self.c.post('/api/login',json={'key':'test-host-password-123456'},headers={'Origin':'https://evil.example'})).status,403)
-  for path in ['/', '/index.html', '/app.js?v=20261101-obs2', '/style.css?v=20261101-obs2', '/story.js?v=20261101-obs2']:
+  for path in ['/', '/index.html', '/app.js?v=20261102-dream1', '/style.css?v=20261102-dream1', '/story.js?v=20261102-dream1']:
    r=await self.c.get(path)
    self.assertEqual(r.status,200)
    self.assertEqual(r.headers.get('Cache-Control'),'no-store')
   page=await (await self.c.get('/')).text()
-  self.assertIn('app.js?v=20261101-obs2',page)
-  self.assertIn('style.css?v=20261101-obs2',page)
+  self.assertIn('app.js?v=20261102-dream1',page)
+  self.assertIn('style.css?v=20261102-dream1',page)
 if __name__=='__main__':unittest.main()

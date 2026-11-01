@@ -45,7 +45,7 @@ class ResultRouteTests(unittest.IsolatedAsyncioTestCase):
   finally:task.cancel();await asyncio.gather(task,return_exceptions=True)
 
  async def test_asset_cache_policy_and_revision(self):
-  for path in ['/', '/index.html', '/app.js?v=20261101-obs2', '/style.css?v=20261101-obs2', '/story.js?v=20261101-obs2']:
+  for path in ['/', '/index.html', '/app.js?v=20261102-dream1', '/style.css?v=20261102-dream1', '/story.js?v=20261102-dream1']:
    r=make_mocked_request('GET',path,app=self.app)
    match=await self.app.router.resolve(r)
    r._match_info=match

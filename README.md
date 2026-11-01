@@ -370,3 +370,68 @@ permitted” in the coding environment. No project repository, initial commit,
 remote, or push was created. The exclusion review used disposable temporary
 Git metadata only; it did not stage or commit project files. The earlier
 credential-rotation advice still applies to previously populated templates.
+
+## Dreamy OBS overlay — revision 20261102-dream1
+
+The OBS-only skin now matches the dashboard's lavender, purple, pink and teal
+palette, using the existing dreamscape and moon SVGs, stars, soft gradients and
+rounded cards. The story has a readable title and narration; three side-by-side
+choice cards show A/B/C, chat commands, actual counts, rounded percentages and
+vote bars. Countdown/status, chapter and resource values remain visible. The
+result uses the existing authoritative counts, deltas and full new memory facts
+with a restrained entrance animation and reduced-motion support. Host dashboard
+markup/styles and all backend/Twitch/authentication logic are unchanged.
+
+Narration starts at a viewport-appropriate size and shrinks only as needed to
+14 logical pixels; a final whole-layout fitting pass handles overflow without
+ellipsis, line clamps, scroll-only content or discarded facts. Existing backend
+narration limits (110 words / 1400 characters for provider text) are unchanged.
+The layout refits after font loading and resizing. Extreme content can require
+additional scaling; readability and fit need confirmation on the new OBS skin.
+
+**This revision's verification:** Node syntax and UI checks pass, including
+actual counts/percentages, reveal expiry, early approval, escaping and draft
+privacy. The Python run has 19 passes, six HTTP setup errors from denied socket
+binds, and one skipped Chrome layout class because headless Chrome cannot launch
+in this environment. Socket-free route/cache checks pass with the new revision.
+Browser tests now additionally check choice text/counts and resource/effect
+bounds, plus pending, voting and paused layouts at both target sizes. They could
+not execute here. The user's previous 27-test local success and manual OBS
+1000 × 550 evidence apply to **20261101-obs2**, not this restyle. Neither target
+size is claimed visually verified for **20261102-dream1** yet.
+
+To verify in a normal Mac terminal without accessing saved adventures:
+
+```bash
+.venv/bin/python -m unittest discover -s tests -v
+node tests/test_reveal_ui.cjs
+```
+
+To load this revision in OBS:
+
+1. In the terminal running the app, press **Ctrl+C**. Keep its existing exported
+   environment and database configuration, then run from this project directory:
+
+   ```bash
+   .venv/bin/python -m backend.server
+   ```
+
+   This restarts the same saved session; an active vote pauses on restart. Host
+   login is required again. Do not delete/reset the database or create a new one.
+2. Open `http://localhost:8080`, press **Command+Shift+R**, unlock, and choose
+   **Stream overlay → Copy URL**. Keep this authenticated read-only URL private.
+3. OBS → Browser Source → **Properties**: turn **Local file** off, paste the
+   copied URL, append **`&v=20261102-dream1`**, set **Width 1000 / Height 550**,
+   then click **Refresh cache of current page → OK**. Confirm the connection
+   badge shows **20261102-dream1**. Use the overlay URL, not the dashboard URL.
+4. Check any previous crop via **Transform → Reset Transform**, then position
+   the source as desired. Repeat with Browser Source **Width 1920 / Height 1080**;
+   the OBS output canvas size alone does not set this viewport.
+5. Keep the source visible and disable **Shutdown source when not visible**
+   during checks. Verify long narration, all three choices/counts/percentages,
+   resource values, result facts and deltas at both sizes. Close a vote, wait for
+   the reveal to expire, then approve. The old chapter must stay until approval;
+   approval during reveal must not shorten the saved seven-second result window.
+   Polling can delay first appearance by up to one normal 800 ms interval.
+
+No server restart, data deletion, commit or push was performed by this restyle.

@@ -1,3 +1,14 @@
+# Current overlay restyle — 2 November 2026
+
+Revision **20261102-dream1** changes only OBS presentation and asset versions.
+Node UI/syntax checks pass. The current Python run reports 19 passes, six HTTP
+setup errors (local socket binding denied), and one skipped Chrome layout class
+(headless launch blocked). Both new-overlay sizes remain visually unverified.
+See README.md's Dreamy OBS overlay section for restart/cache-refresh steps.
+
+The earlier user-provided automated and manual evidence below applies to the
+previous **20261101-obs2** overlay and is preserved as historical evidence.
+
 # Verification status — 1 November 2026
 
 ## User-provided local automated result
