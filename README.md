@@ -35,7 +35,7 @@ A colourful host dashboard with story narration, chapter progress, resource card
 
 ![StreamQuest AI dashboard with space artwork, resources and A/B/C choices](docs/images/dashboard.jpg)
 
-*Dashboard capture from the browser preview; the preview is labelled as sample content.*
+*Actual local host dashboard captured from the supplied demo video, with story progress and resource values.*
 
 ### Stream operations · OBS
 
@@ -43,20 +43,20 @@ A separate, read-only Browser Source keeps host controls off the broadcast.
 
 <p align="center"><img src="docs/images/stream-ops.jpg" width="760" alt="StreamQuest AI running inside OBS Studio"></p>
 
-*Actual OBS capture from the verified `20261101-obs2` revision. The current `20261102-dream1` skin adds dreamy artwork and colourful voting cards; this older capture documents the working integration.*
+*Current `20261102-dream1` overlay captured inside OBS: Chapter 2, synchronized countdown, and one vote for B.*
 
 ### Choice Consequences Reveal
 
 ![Actual vote result, resource changes and newly gained story memory in OBS](docs/images/choice-reveal.jpg)
 
-*Actual result capture from revision `20261101-obs2`: one vote for B, deterministic resource changes and Navigation mapped.*
+*Current dreamy result card: one vote for B, oxygen −6 after the earlier life-support bonus, energy −5, chaos +15, and Navigation mapped.*
 
 <details>
-<summary><b>View the approval gate on the stream overlay</b></summary>
+<summary><b>View the current overlay up close</b></summary>
 
-![OBS overlay holding Chapter 2 while awaiting host approval](docs/images/obs-overlay.jpg)
+![Dreamy OBS overlay showing Chapter 2, countdown and all three voting choices](docs/images/obs-overlay.jpg)
 
-The previous chapter stays visible while the host reviews the private draft. Approval advances the broadcast to the next chapter.
+All three choices, counts and percentages fit in the captured overlay. After resolution, the previous chapter stays visible until host approval advances the broadcast.
 
 </details>
 
@@ -239,7 +239,7 @@ Node is needed only for JavaScript checks. Chrome/Chromium is needed for browser
 | **27 tests passed, no skips** | User-reported local Mac run on 1 November 2026, before the dreamy overlay restyle |
 | **243 decision paths** | Automated five-round resource and story-memory coverage |
 | **Real Twitch + OBS flow** | Manually confirmed at 1000 × 550 for `20261101-obs2`: votes, result reveal, waiting for approval, next chapter |
-| **Current dreamy overlay** | Node checks passed in the development environment; six HTTP tests were blocked by socket permissions and Chrome could not launch there. Fresh visual/layout verification remains needed for this revision. |
+| **Current dreamy overlay** | The supplied 2 November demo recording shows `20261102-dream1` in OBS, synchronized votes/countdown, consequence reveals and chapter progression. Exact source dimensions and reveal duration were not measured from the recording. Automated reruns for this revision remain unconfirmed. |
 
 These checks cover vote replacement, event deduplication, ties, zero-vote defaults, persistence, permissions, result accuracy and draft redaction. Synthetic events and automated browser tests do not establish real Twitch delivery or an actual broadcast.
 
