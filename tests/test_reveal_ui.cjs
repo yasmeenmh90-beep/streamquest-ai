@@ -6,7 +6,7 @@ let now=1000;const intervals=[];
 const app={innerHTML:''},body={classList:{add(){},toggle(){}}};
 const context={URLSearchParams,location:{search:'?overlay=private-test-token'},localStorage:{getItem(){return null}},document:{body,querySelector(s){return s==='#app'?app:null},querySelectorAll(){return []}},window:{addEventListener(){}},setInterval(fn){intervals.push(fn)},setTimeout(){},clearTimeout(){},fetch:async()=>{throw Error('offline')},Date:class extends Date{static now(){return now}},console};
 vm.createContext(context);
-const source=readFileSync('dist/app.js','utf8').replace(/^import .*;\n/,'').replace(/boot\(\);\s*$/,'');
+const source=readFileSync('dist/app.js','utf8').replace(/^import .*;\r?\n/,'').replace(/boot\(\);\s*$/,'');
 vm.runInContext(source,context);
 function run(code){return vm.runInContext(code,context)}
 run('render()');assert.match(app.innerHTML,/Connecting to live session/);assert.doesNotMatch(app.innerHTML,/A signal in the silence/);
