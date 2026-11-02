@@ -1,437 +1,290 @@
+<div align="center">
+
+<img src="dist/assets/moon-badge.svg" width="90" alt="StreamQuest crescent moon">
+
 # StreamQuest AI
-A host-controlled, five-round Twitch space adventure built with Codex. Real viewers vote with !a, !b and !c; decisions alter resources and community alignment. A separate read-only OBS overlay shows approved scenes.
 
-## Two modes
-- **Hosted browser demo:** playable prepared story; simulated votes; browser-local persistence and same-origin tab synchronization. No Twitch or runtime AI connection is claimed.
-- **Local Python app:** backend-authoritative voting, SQLite persistence, host authentication, Twitch broadcaster OAuth and EventSub chat, optional AI-generated scenes, read-only overlay synchronized via polling. Requires your credentials. Real Twitch voting and the OBS approval flow at 1000 × 550 have user-reported manual verification; runtime AI remains unverified.
+### One ship. One community. Every choice matters.
 
-## Run locally (macOS / Linux)
-Python 3.10+ and a Twitch account are needed for live chat.
+A Twitch adventure where chat chooses the next move—and the story remembers.
+
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](#quick-start)
+[![Twitch](https://img.shields.io/badge/Twitch-EventSub-9146FF?logo=twitch&logoColor=white)](#connect-twitch)
+[![OBS](https://img.shields.io/badge/OBS-Browser_Source-302E31?logo=obsstudio&logoColor=white)](#stream-with-obs)
+[![Codex](https://img.shields.io/badge/Built_with-OpenAI_Codex-10A37F)](#built-with-codex)
+
+[Explore the interface](#interface-gallery) · [Run locally](#quick-start) · [Connect Twitch](#connect-twitch) · [Verification](#testing--verification)
+
+</div>
+
+---
+
+## Turn your audience into the crew
+
+The **Aurora** is in trouble. Oxygen is falling, a mysterious signal is calling, and the next decision belongs to Twitch chat.
+
+StreamQuest AI gives streamers a five-chapter space adventure their community can control with **`!a`, `!b`, and `!c`**. Choices change oxygen, energy and chaos, create lasting story memories, and influence later chapters and the ending. The host reviews each new scene before it goes on stream.
+
+> **Streamer controls the show. Chat makes the decisions. The adventure remembers.**
+
+## Interface gallery
+
+### Mission control
+
+A colourful host dashboard with story narration, chapter progress, resource cards and live voting controls.
+
+![StreamQuest AI dashboard with space artwork, resources and A/B/C choices](docs/images/dashboard.jpg)
+
+*Dashboard capture from the browser preview; the preview is labelled as sample content.*
+
+### Stream operations · OBS
+
+A separate, read-only Browser Source keeps host controls off the broadcast.
+
+<p align="center"><img src="docs/images/stream-ops.jpg" width="760" alt="StreamQuest AI running inside OBS Studio"></p>
+
+*Actual OBS capture from the verified `20261101-obs2` revision. The current `20261102-dream1` skin adds dreamy artwork and colourful voting cards; this older capture documents the working integration.*
+
+### Choice Consequences Reveal
+
+![Actual vote result, resource changes and newly gained story memory in OBS](docs/images/choice-reveal.jpg)
+
+*Actual result capture from revision `20261101-obs2`: one vote for B, deterministic resource changes and Navigation mapped.*
+
+<details>
+<summary><b>View the approval gate on the stream overlay</b></summary>
+
+![OBS overlay holding Chapter 2 while awaiting host approval](docs/images/obs-overlay.jpg)
+
+The previous chapter stays visible while the host reviews the private draft. Approval advances the broadcast to the next chapter.
+
+</details>
+
+## What makes it different
+
+| Feature | What viewers and streamers experience |
+|---|---|
+| **Live chat decisions** | Twitch EventSub delivers real chat commands to the backend. One replaceable vote per viewer, per round. |
+| **Consequences you can see** | A result reveal displays the selected action, exact totals, actual resource changes and newly gained memories. |
+| **A story with memory** | Rescued crew, repaired systems and discoveries affect later scenes, resources and endings. |
+| **Host approval** | New narrative stays private until the streamer approves it. |
+| **Broadcast-ready overlay** | A dedicated OBS view shows the approved story, timer, choices and results. Targets 1000 × 550 and 1920 × 1080. |
+| **Optional AI narration** | An OpenAI-compatible provider can draft narrative. Prepared scenes remain available without an API key. |
+| **Local persistence** | SQLite keeps adventure state between runs. Restart pauses active voting. |
+| **Accessible motion** | Reduced-motion preferences disable entrance animations. |
+
+## How an expedition works
+
+1. **Launch** the adventure from Mission control.
+2. **Open voting** for a 45-second round.
+3. **Chat chooses** with `!a`, `!b` or `!c`.
+4. **Reveal consequences** when the timer ends or the host closes voting.
+5. **Review and approve** the next scene before it appears in OBS.
+6. Continue through **five chapters** to the community's ending.
+
+The result window lasts seven seconds from backend close. Polling can delay its first appearance by up to approximately 800 ms. If the host approves during the reveal, the overlay completes the reveal before showing the approved scene.
+
+### Decisions that carry forward
+
+- **Repair life support:** preserves oxygen on later rounds.
+- **Rescue the engineer:** restores energy in subsequent chapters.
+- **Reinforce shields:** mitigates later damage.
+- **Decode signals / scan navigation:** changes later narrative and finale possibilities.
+
+Vote totals and resource effects come from deterministic application logic. AI narration cannot set or alter those values.
+
+## Choose your mode
+
+| | Browser practice | Local Twitch app |
+|---|---|---|
+| Voting | Simulated viewers | Real Twitch chat via EventSub |
+| Storage | Browser local storage | SQLite |
+| Story | Prepared branching scenes | Prepared scenes + optional AI narrative |
+| Synchronization | Same-origin browser tabs | Backend polling, including OBS |
+| Credentials | None | Host key + Twitch application credentials |
+| Purpose | Explore the interface | Run an adventure with your channel |
+
+**Use the local Python app for real Twitch integration and OBS.** A hosted static preview does not provide the live backend.
+
+## Quick start
+
+**Requirements:** Python 3.10+, Git, and a Twitch account for live chat. No frontend build or npm installation is needed.
 
 ```bash
+git clone https://github.com/yasmeenmh90-beep/streamquest-ai.git
+cd streamquest-ai
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-export HOST_KEY='choose-your-own-long-password-at-least-16-characters'
-export APP_BASE_URL='http://localhost:8080'
-python3 -m backend.server
+cp .env.example .env
 ```
-Open http://localhost:8080 and enter your HOST_KEY. Do not use 127.0.0.1 in the browser unless you also change APP_BASE_URL and the OAuth callback to match. The server binds loopback by default. No Node build is required.
 
-For a reusable local configuration, copy `.env.example` to `.env`, edit the
-placeholders privately, and export it before starting the server:
+Edit `.env` privately and replace the placeholders. Set a unique **HOST_KEY with at least 16 characters**. Then load your configuration and start:
 
 ```bash
-cp .env.example .env  # first setup only; do not overwrite an existing .env
-# Edit .env locally; use a unique random HOST_KEY.
 set -a
 source .env
 set +a
-python -m backend.server
+.venv/bin/python -m backend.server
 ```
 
-The server does not load `.env` automatically. Use shell-compatible values (quote
-values containing spaces or shell punctuation). `.env.example` contains no real
-credentials. `aiohttp` is the sole external Python dependency; SQLite is included
-with Python. Node.js is needed only for the optional JS regression check; Google
-Chrome/Chromium is needed for automated layout tests. No npm install or frontend
-build is required.
+Open **http://localhost:8080**, then enter the same host key to unlock.
+
+> The server does **not** load `.env` automatically. Source it in the same terminal used to start the server. Keep that terminal running. Copy `.env.example` only on first setup; do not overwrite an existing configuration.
+
+Use shell-compatible quoted values in `.env`. Browser origin and callback settings must match: do not switch to `127.0.0.1` unless the configuration is updated too.
+
+### Configuration reference
+
+| Variable | Purpose |
+|---|---|
+| `HOST_KEY` | Private host dashboard password, at least 16 characters |
+| `APP_BASE_URL` | Browser origin; normally `http://localhost:8080` |
+| `TWITCH_CLIENT_ID` | Your registered Twitch application's Client ID |
+| `TWITCH_CLIENT_SECRET` | Your Twitch application secret; backend only |
+| `TWITCH_REDIRECT_URI` | Normally `http://localhost:8080/auth/callback` |
+| `STORY_API_KEY` | Optional runtime narrative provider key |
+| `STORY_MODEL` | Optional model supported by your provider |
+| `STORY_API_URL` | Optional endpoint; defaults to OpenAI Chat Completions |
+| `DATABASE_PATH` | Optional database override; default `data/streamquest.db` |
+| `PORT` | Optional local port; default `8080` |
 
 ## Connect Twitch
-1. Register an application at https://dev.twitch.tv/console/apps. Register the exact redirect http://localhost:8080/auth/callback.
-2. Stop the server and export TWITCH_CLIENT_ID and TWITCH_CLIENT_SECRET in your terminal; never put them in frontend code.
-3. Optionally set TWITCH_REDIRECT_URI if using a different permitted callback. Restart, log in, go to Connections and click Connect Twitch.
-4. Authorize the broadcaster account whose chat you will use. This installed-bot configuration requests user:read:chat only, using the same broadcaster/user ID for EventSub.
-5. Wait for Connected status, launch a story and open voting. Send !a / !b / !c in that channel from viewer accounts. Test this on an actual Twitch stream before recording the hackathon demo.
-6. If Twitch authorization expires, refresh is attempted. Otherwise reconnect. Unexpected disconnection pauses voting; resume explicitly when chat is healthy. Events missed while disconnected cannot be recovered.
 
-Official references: https://dev.twitch.tv/docs/chat/authenticating/ and https://dev.twitch.tv/docs/eventsub/handling-websocket-events/.
+1. [Register a Twitch application](https://dev.twitch.tv/console/apps).
+2. Add the exact OAuth redirect URL: **`http://localhost:8080/auth/callback`**.
+3. Configure `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET` in your local environment and restart the server.
+4. Unlock the dashboard → **Connections → Connect Twitch**.
+5. Authorize the broadcaster account whose chat will host the adventure.
+6. Wait for **Connected**, launch an adventure, and open voting.
+7. Have viewers send `!a`, `!b` or `!c` in that channel's chat.
 
-## AI storytelling
-Export STORY_API_KEY and STORY_MODEL for a model supporting the configured OpenAI-compatible Chat Completions endpoint. Default endpoint: https://api.openai.com/v1/chat/completions; override STORY_API_URL if necessary. Runtime API usage may be separately billed. No key is included. API failure or invalid output keeps a prepared fallback. The host must approve every next scene, including the ending. The AI writes narrative only, never vote totals or resource values. Configure supported provider/model limits when choosing a model.
+The installed-bot setup requests `user:read:chat`, with the same broadcaster/user ID for the EventSub subscription. Unexpected disconnection pauses voting; resume when the connection is healthy. Missed events cannot be recovered.
 
-## OBS
-In the local app open Stream overlay → Copy URL. Add that URL to an OBS Browser Source, width 1920, height 1080. The unguessable overlay token grants read-only story access. Keep the URL private. Hosted demo tab synchronization does not synchronize a separate OBS browser process; use the backend for OBS. Current overlay scenes have a dark background with transparent page surroundings.
+[Twitch chat authentication](https://dev.twitch.tv/docs/chat/authenticating/) · [EventSub WebSockets](https://dev.twitch.tv/docs/eventsub/handling-websocket-events/)
 
-## Rules and persistence
-45-second rounds, five chapters. One vote per Twitch user per round; replacement is allowed until close. Duplicate event IDs are ignored. Ties choose the first tied choice in A/B/C order; no votes select A. State mutations are serialized. A close applies effects exactly once; versions prevent stale host commands. Restart pauses an active vote. SQLite stores story state and Twitch refresh credentials locally in data/; protect that directory and do not commit or distribute it. Host sessions are memory-only; log in again after restart. The server is intended for one trusted local streamer, not public multi-tenant use. Harden credential storage, authentication rate limiting, session lifetime and observability before public backend hosting.
+## Stream with OBS
 
-## Verify
-```bash
-python3 -m unittest discover -s tests -v
-node --check dist/app.js
+1. Run and unlock the local app.
+2. Open **Stream overlay → Copy URL**.
+3. Add an OBS **Browser Source**, with **Local file off**, and paste that URL privately.
+4. Set the Browser Source viewport to **1000 × 550** or **1920 × 1080**.
+5. Refresh the source cache after UI updates. The current revision badge is **`20261102-dream1`**.
+6. Keep the source visible while testing voting, the result reveal and host approval.
+
+The overlay token grants read-only story access. Keep it private. The plain dashboard URL and `?overlay=demo` are not substitutes for your live overlay URL.
+
+<details>
+<summary><b>Fix a stale or cropped OBS source</b></summary>
+
+- Restart the server in the same configured terminal.
+- Hard-refresh the dashboard and copy the overlay URL again.
+- In OBS Properties, click **Refresh cache of current page**.
+- If necessary, append `&v=20261102-dream1` to the copied overlay URL.
+- Use **Transform → Reset Transform** to remove an existing crop, then fit/position the source.
+- Changing the OBS output canvas does not change the Browser Source's own width and height.
+
+</details>
+
+## Optional AI storytelling
+
+Configure `STORY_API_KEY` and `STORY_MODEL` to enable runtime narrative generation. The default endpoint is:
+
+```text
+https://api.openai.com/v1/chat/completions
 ```
-Manual integration checklist: two real viewers; change a vote; late/invalid input; timer expiry; host approval; AI timeout/fallback; disconnect/resume; restart; OBS connection; all five rounds; unauthorized host action; exported recap.
 
-## Layout
-- dist/: dashboard, browser demo and OBS overlay
-- backend/engine.py: deterministic state engine
-- backend/server.py: aiohttp host, SQLite, Twitch OAuth/EventSub and narrative adapter
-- tests/: engine and HTTP regression tests
+The adapter accepts an OpenAI-compatible Chat Completions response. Provider failures or invalid responses retain a prepared fallback. Every next scene—including the ending—requires host approval.
 
-## Hackathon submission
-Create a public GitHub repository with all source and these instructions. Record a public YouTube demo under three minutes showing real Twitch operation and actual Codex development. Supply the genuine Codex build-thread session ID; none is invented here. This implementation was started 31 October 2026. Check current official rules at https://twitchcon-codex.devpost.com/rules.
+**Codex development and runtime narration are separate:** Codex helps build the application; a story API key optionally generates narrative while the application runs. Runtime API usage can incur separate charges.
 
-## Expedition dashboard update
-The colourful Cosmic Playground UI adds midnight-blue and violet navigation, a pastel planet and spaceship, cyan/pink resource cards, colour-coded voting choices, a five-chapter progress strip and a contextual Your next step prompt. Open How to play for a plain-language explanation of streamer, viewer and OBS roles.
+## Architecture
 
-### How the game works
-You are the host. Open a vote; viewers type !a, !b or !c in your Twitch channel. When voting closes, the most popular choice changes ship resources and the story. Read the draft and approve it before it appears to viewers. Repeat for five chapters. The online demo lets you practice using the simulator instead of real viewers.
+```mermaid
+flowchart TD
+    Chat["Twitch chat · !a / !b / !c"] --> Events["EventSub WebSocket"]
+    Events --> Host["Python / aiohttp backend"]
+    Dashboard["Host dashboard"] --> Host
+    Host <--> DB["SQLite · local state"]
+    Host --> Story["Prepared story / optional AI draft"]
+    Story --> Review["Host review and approval"]
+    Review --> Host
+    Host --> Overlay["Read-only OBS overlay"]
+```
 
-### Update an existing local installation
-For a planned upgrade, install the matching backend and complete dist/ source, including story.js and assets/, then restart the server and hard-refresh the browser (Command + Shift + R). Keep your data directory and private environment configuration. A partial copy of index.html, style.css, and app.js can leave modules or cache policy out of sync. This submission review did not restart the running server.
+| Layer | Implementation |
+|---|---|
+| Frontend | HTML, CSS, vanilla JavaScript, bundled SVG artwork |
+| Backend | Python + aiohttp |
+| State and results | Deterministic engine with serialized mutations |
+| Persistence | SQLite |
+| Twitch integration | Broadcaster OAuth + EventSub chat messages |
+| Broadcast | OBS Browser Source, backend polling |
+| Development | OpenAI Codex |
 
-## Dream Orbit styling
-Compact story panel and controls, consistent SVG line icons, bundled pastel dreamscape and crescent illustrations, gentle star twinkling, entrance transitions and floating moon animation. Reduced-motion preferences disable animation. All artwork is bundled locally. UI update: replace dist/index.html, dist/style.css, dist/app.js and merge dist/assets/; do not replace your backend or data.
+## Testing & verification
 
-## Dashboard before host sign-in
-The local app now opens with the styled dashboard and a host-key form at the top. Before authentication the dashboard shows an explicitly labeled sample session, not private session data. Host actions are disabled, and the backend continues to reject unauthorized commands and state access. After login the actual session loads; logout restores the sample preview. No backend changes are needed for this update.
-
-## Compact preview navigation fix
-All navigation pages now open before host sign-in: Mission control, How to play, Story chronicle, Stream overlay and Connections. Pages show sample or explanatory content until authenticated. Private overlay URLs, real history and connection details remain protected. Connecting Twitch and mission actions still require the host key. UI sizing is reduced further. If the display remains oversized on a Mac, reset browser zoom with Command+0. Copy all UI files and assets into dist, then hard-refresh with Command+Shift+R.
-
-## Story continuity and integration verification
-Earlier choices now create persistent facts and named endings. Repaired life support preserves oxygen on subsequent rounds; a rescued engineer restores energy; reinforced shields mitigate later damage; scanned coordinates and rescue signals change the finale. The dashboard and overlay display story-memory chips. Start a new adventure to collect continuity facts from chapter 1.
-
-16 automated tests pass, including all 243 five-round decision paths and synthetic EventSub-to-vote-to-approval/overlay integration. Real Twitch viewer delivery, OBS, runtime AI and Codex session evidence are still pending. See docs/VERIFICATION_STATUS.md, docs/LIVE_DEMO_CHECKLIST.md and docs/CODEX_HANDOFF.md.
-
-This full update changes backend/ and dist/. Stop the server; copy backend/, dist/, tests/ and docs/ into your existing project. Keep data/, .venv/ and your environment settings. Restart in the same terminal. Include dist/story.js and the assets folder.
-
-## Choice Consequences Reveal
-Closing a round saves a deterministic `result` snapshot in SQLite: selected choice,
-all three vote counts and total, tie/default reason, actual resource deltas after
-bonuses and 0–100 clamping, and only the newly gained memory facts. AI narration
-cannot supply or modify these values. Both dashboard and OBS show this result
-until `reveal_until` (seven seconds after backend close). Polling can delay its
-first appearance by up to 800 ms; reconnecting shows only the remaining interval,
-not a replay. Keep browser and backend clocks synchronized. Approval does not
-remove the snapshot; OBS finishes the reveal before displaying an approved scene.
-Without approval the existing scene stays visible. Old saves without a result
-load normally and gain the feature on their next resolved round.
-
-Ties explicitly report the tied letters and use the existing A/B/C ordering.
-Zero votes explicitly report default A, never a community win. Round five can
-correctly show “No new facts gained.” The browser demo uses locally calculated
-sample results and labels them as samples.
-
-The dedicated OBS layout supports Browser Sources at **1000 × 550** and
-**1920 × 1080**. A live URL displays connection status and never falls back to
-sample story content if the backend is unavailable. `?overlay=demo` explicitly
-opens the sample preview. Reduced-motion disables the card entrance animation;
-the seven-second display still applies. Twitch OAuth, EventSub, vote replacement,
-and event deduplication retain their existing flow.
-
-Run automated checks without reading credentials or using your saved database:
+Run from the project folder:
 
 ```bash
-python3 -m unittest discover -s tests -v
+.venv/bin/python -m unittest discover -s tests -v
 node --check dist/app.js
 node tests/test_reveal_ui.cjs
 ```
 
-Tests use temporary databases. The HTTP tests need permission to bind a loopback
-socket. In a restricted sandbox, run the socket-free checks separately:
+Node is needed only for JavaScript checks. Chrome/Chromium is needed for browser layout tests. HTTP tests require permission to bind local loopback ports; tests use temporary databases.
 
-```bash
-python3 -m unittest discover -s tests -p test_engine.py -v
-python3 -m unittest discover -s tests -p test_story.py -v
-python3 -m unittest discover -s tests -p test_result_persistence.py -v
-python3 -m unittest discover -s tests -p test_result_routes.py -v
-node tests/test_reveal_ui.cjs
-```
+| Evidence | Scope |
+|---|---|
+| **27 tests passed, no skips** | User-reported local Mac run on 1 November 2026, before the dreamy overlay restyle |
+| **243 decision paths** | Automated five-round resource and story-memory coverage |
+| **Real Twitch + OBS flow** | Manually confirmed at 1000 × 550 for `20261101-obs2`: votes, result reveal, waiting for approval, next chapter |
+| **Current dreamy overlay** | Node checks passed in the development environment; six HTTP tests were blocked by socket permissions and Chrome could not launch there. Fresh visual/layout verification remains needed for this revision. |
 
-Manual browser/OBS verification (use a separate test database and a new test
-session; do not reset an adventure you want to keep):
+These checks cover vote replacement, event deduplication, ties, zero-vote defaults, persistence, permissions, result accuracy and draft redaction. Synthetic events and automated browser tests do not establish real Twitch delivery or an actual broadcast.
 
-1. Open the dashboard and its live overlay. At both source sizes above, check the
-   approved story, status/timer, and all three complete choice labels and counts.
-2. Resolve a normal vote, a B/C tie, and a zero-vote round. Compare the card to
-   `/api/state`'s `result`: exact counts, deltas, and newly gained memory.
-3. Check the reveal ends seven seconds after close. Reload during and after it;
-   it should neither restart nor replay. Delay approval: no draft may appear in
-   OBS. Approve during the reveal: OBS finishes the card before the next scene.
-4. Enable reduced motion in the OS/browser and repeat. Verify a static card with
-   the same duration. Disconnect the backend: the overlay must identify its stale
-   connection and never switch to sample content. Verify `?overlay=demo` is
-   prominently marked SAMPLE PREVIEW.
-5. With real Twitch viewers, verify replacement votes, timer closure, deduplication,
-   reconnect/pause, and host approval. These require real-account verification;
-   synthetic tests do not establish real Twitch delivery or OBS visual evidence.
+See [verification details](docs/VERIFICATION_STATUS.md) and the [live demo checklist](docs/LIVE_DEMO_CHECKLIST.md).
 
-### Review fixes and exact local verification
-The follow-up review fixes live-overlay recovery labels even when session data
-has not changed, avoids fetching host configuration for read-only overlays, and
-makes zero-vote/tie draft introductions honest too. Short canvases put the three
-choices in one row; longer scene text shrinks down to a readable 14 px when
-needed. Provider narration still cannot set results. The Chrome layout tests
-exercise long scenes, result cards, both canvas sizes, and reduced motion in an
-isolated temporary browser profile. They skip with an explicit reason when
-Chrome is absent or cannot launch:
+## Rules & local security
 
-```bash
-python3 -m unittest discover -s tests -p test_overlay_layout.py -v
-```
+- One vote per Twitch user per round; a later valid command replaces that viewer's vote.
+- Duplicate event IDs are ignored; invalid or late votes are rejected.
+- Ties select the first tied option in A/B/C order.
+- Zero votes select default A and are labelled honestly.
+- Round closure applies effects once; stale host commands are rejected.
+- Host sessions are memory-only: unlock again after restart.
+- Twitch refresh credentials are stored locally in SQLite. Protect `data/`.
+- Never commit populated `.env` files, tokens, database files or private overlay URLs.
+- If a valid credential was shared in an earlier template or recording, rotate it privately.
 
-To verify locally without changing your saved adventure:
+This backend is intended for **one trusted local streamer**. Public multi-user hosting needs additional authentication, credential-storage and operational hardening.
 
-1. Stop any server currently using port 8080. In the project directory activate
-   the existing virtual environment with `source .venv/bin/activate`. Use your
-   existing backend environment configuration; do not print environment variables.
-   `HOST_KEY` must already be configured (at least 16 characters).
-2. Start an isolated session with this command. It creates a fresh database under
-   a unique temporary directory and does not access `data/streamquest.db`:
+## Project structure
 
-   ```bash
-   DATABASE_PATH="$(mktemp -d /tmp/streamquest-verify.XXXXXX)/state.db" APP_BASE_URL=http://localhost:8080 python3 -m backend.server
-   ```
+| Path | Contents |
+|---|---|
+| `backend/engine.py` | Voting, state transitions and deterministic results |
+| `backend/story.py` | Story facts, callbacks, resource effects and endings |
+| `backend/server.py` | HTTP API, SQLite, Twitch OAuth/EventSub, narrative adapter |
+| `dist/` | Host dashboard, practice mode and OBS overlay |
+| `dist/assets/` | Bundled space and moon artwork |
+| `tests/` | Engine, HTTP, persistence, UI and layout checks |
+| `docs/` | Verification, demo checklist and development notes |
 
-3. Open `http://localhost:8080`, hard-refresh, and unlock using your configured
-   host key. In Connections, connect your Twitch broadcaster account for this
-   temporary session. Existing environment credentials are reused; do not paste
-   credentials into chat or source files. The new database has no saved OAuth
-   authorization, so it requires a fresh Connect Twitch step.
-4. In Stream overlay, choose Copy URL. In OBS add a **Browser Source**, paste that
-   URL privately, and set Width **1000**, Height **550**. Use the same URL at
-   **1920 × 1080** as well. The source should say **LIVE MODE · Connected** and
-   show the entire scene, status/timer, and three choices. Turn off OBS's
-   “Shutdown source when not visible” while checking timing.
-5. Launch adventure → Open voting. Have two distinct viewers both send `!b` in
-   your channel. Close & resolve. On both dashboard and OBS confirm **B**, counts
-   **A: 0 / B: 2 / C: 0**, total **2**, oxygen **−8**, energy **−5**, chaos **+15**,
-   and newly gained **Signal decoded**. The reveal window ends seven seconds
-   after backend close (the first appearance can lag by one polling interval).
-6. Wait without approving: OBS must return to the old scene with “awaiting host
-   approval.” The host can read the draft on the dashboard. Approve next chapter,
-   then open voting. Have one viewer send `!b`, another `!c`. Close: confirm
-   **Tie B / C**, selected **B**, **0 / 1 / 1**, deltas **−8 / −5 / +15**, and
-   **Navigation mapped**. Approve during the reveal to confirm OBS finishes the
-   result before showing the approved chapter.
-7. Open the third vote and close without viewer commands. Confirm **No votes ·
-   default A**, **0 / 0 / 0**, total **0**, deltas **+10 / −8 / −12**, and
-   **Shields reinforced**. The draft must not claim a community choice. On the
-   fifth round, no new memory fact is expected.
-8. Reload the overlay during a reveal and after expiry: it shows only the
-   remaining window and does not replay expired results. In Chrome DevTools →
-   More tools → Rendering, emulate `prefers-reduced-motion: reduce`; repeat a
-   reveal and confirm no entrance movement. Resize the source to each target
-   size and verify every line and choice stays in view.
-9. To test reconnect without restarting the session, open the overlay in Chrome,
-   set DevTools Network to Offline, then back to No throttling. Its status must
-   change from disconnected back to **Connected**, even if no votes changed.
-   `http://localhost:8080/?overlay=demo` must instead say **SAMPLE PREVIEW**.
-10. Stop the temporary server with Ctrl+C. Restart your normal server with
-    `python3 -m backend.server` in its usual configured environment to return to
-    your saved adventure. No reset or deletion is needed.
+## Built with Codex
 
-Automated checks use temporary databases and synthetic events. They do not
-establish delivery from real Twitch accounts or successful rendering in OBS.
+OpenAI Codex was used to implement the Choice Consequences Reveal, improve the OBS layout and live-mode labels, add the dreamy overlay styling, and develop regression checks. Local manual testing informed follow-up fixes.
 
-### OBS refresh after the responsive overlay fix (revision 20261101-obs2)
+The project began as a ChatGPT-assisted prototype; subsequent implementation and testing work took place in a genuine Codex development thread. Submission material should describe that provenance accurately and use the actual main Codex session ID.
 
-The shipped broadcast view never uses “Your story preview.” Seeing that text in
-OBS indicates an older UI or the dashboard URL rather than the current overlay.
-The updated entry page versions CSS, JS, and the story module; the Python server
-sends `Cache-Control: no-store`. The live overlay displays
-**LIVE MODE · Connected · 20261101-obs2** so its revision can be checked directly.
-All three choices stay together on short canvases. Scene text shrinks first;
-if content still exceeds the viewport, the complete scene or result layout scales
-to fit without truncating text. Host approval and Twitch handlers are unchanged.
+[Codex handoff](docs/CODEX_HANDOFF.md) · [Development history](docs/DEVELOPMENT_HISTORY.md) · [Hackathon rules](https://twitchcon-codex.devpost.com/rules)
 
-1. In the terminal running the server, press **Ctrl+C**. From this project folder,
-   in your usual configured shell, run:
+---
 
-   ```bash
-   source .venv/bin/activate
-   python3 -m backend.server
-   ```
+<div align="center">
 
-   Reuse your existing environment (`HOST_KEY`, Twitch settings, and any
-   `DATABASE_PATH` override). The app does not load `.env` automatically. Keep the
-   same database; no reset, new database, or Twitch reauthorization is needed.
-   Restart pauses an active vote and requires unlocking the dashboard again.
-2. Open `http://localhost:8080`, press **Command+Shift+R**, unlock the dashboard,
-   and use **Stream overlay → Copy URL**. The URL must contain your private
-   `?overlay=…` token; do not use the plain dashboard URL or `overlay=demo`.
-3. In OBS, open the Browser Source **Properties**. Turn **Local file** off,
-   paste the copied URL, set **Width 1000 / Height 550**, and click
-   **Refresh cache of current page**, then **OK**. If the old view persists,
-   append `&v=20261101-obs2` to the URL and refresh again. Verify the revision
-   label above. If missing, check the server/project folder and port being used.
-4. Right-click the source → **Transform → Reset Transform** to remove an old
-   crop/scale. Position/scale it as needed after checking the source itself.
-   Repeat with Browser Source **Width 1920 / Height 1080**. Changing the OBS
-   output canvas alone does not change the Browser Source viewport.
-5. Keep the source visible and disable **Shutdown source when not visible**
-   during verification. On the next Chapter 1 round, send `!b` from one viewer
-   and close voting. Expect **B: 1**, **oxygen −8**, **energy −5**, **chaos +15**,
-   and **Signal decoded** on both dashboard and OBS. The result expires seven
-   seconds after backend close; 800 ms polling can shorten its visible time.
-   Wait without approving: the previous scene and all three choices return with
-   **awaiting host approval**. Approve: Chapter 2 appears. If approving during
-   the reveal, the result stays until its original expiry, then Chapter 2 appears.
+**Built by [Yasmeen Azmat Ali](https://github.com/yasmeenmh90-beep)**
 
-### Verification status — 2026-11-01
+*Let chat choose. Let the story remember.*
 
-**User-reported manual OBS verification, 1000 × 550, revision 20261101-obs2:**
-
-- Real Twitch vote totals match the dashboard.
-- The Choice Consequences Reveal card appears in OBS.
-- After the reveal, the old chapter stays visible with “awaiting host approval.”
-- Clicking Approve changes OBS to Chapter 3.
-- All three choices are fully visible; the live revision label is displayed.
-
-These are the user's observations, not automated browser results. Earlier manual
-checks also confirmed B=1, oxygen −8, energy −5, chaos +15, Signal decoded on the
-dashboard, and Chapter 2 in OBS after approval. Exact seven-second visible timing
-has not been measured manually. The result window is seven seconds from backend
-close; polling can shorten the visible interval.
-
-**Automated rerun using the project's virtual environment:**
-
-```bash
-.venv/bin/python -m unittest discover -s tests -p test_server.py -v
-.venv/bin/python -m unittest discover -s tests -p test_live_flow.py -v
-.venv/bin/python -m unittest discover -s tests -v
-node tests/test_reveal_ui.cjs
-```
-
-**Latest user-provided local automated result:** in the user's normal Mac
-terminal, `.venv/bin/python -m unittest discover -s tests -v` reported
-**Ran 27 tests in 13.330s — OK, no skips**. This includes the previously blocked
-six HTTP tests and both overlay layout tests. The layout tests cover
-**1000 × 550 and 1920 × 1080**, long scenes, result cards, and reduced motion in
-headless Chrome. This result is reported by the user; the coding environment did
-not independently reproduce it. Automated Chrome layout success is distinct from
-manual testing in OBS, which is confirmed only at **1000 × 550**.
-
-The earlier restricted-environment run had 19 Python passes, six HTTP setup
-errors from denied socket binds, and a skipped Chrome layout class. The local
-Mac result resolves those execution blockers for local verification. Coverage
-includes voting rules, all 243 story paths, persistence, HTTP permissions,
-cache headers, result accuracy, and draft redaction. The separately run Node UI
-suite passed in the coding environment, including the 7000 ms timestamp boundary,
-early approval, and recovery. That Node result is separate from the 27 Python
-tests and is not a measurement of visible OBS duration.
-
-HTTP fixtures now clear inherited environment configuration, restore it during
-cleanup, use unique temporary databases and ephemeral loopback ports, and
-register client cleanup before startup so setup failures close client sessions.
-All existing assertions remain; no HTTP test was skipped or replaced. The
-verification work did not stop or modify the user's running server or saved
-adventures.
-
-**Still unverified manually:** 1920 × 1080; exact seven-second visible duration;
-approval during the reveal; reload during/after reveal; tie and zero-vote result
-presentation; reduced motion; disconnect/reconnect; long generated-scene fit;
-and a complete five-chapter OBS run. The HTTP commands above can run alongside the app; they use temporary databases and ephemeral
-ports and do not require stopping the running app. The earlier restart and
-isolated-session instructions are optional procedures, not actions performed by
-this verification run.
-
-### Submission readiness
-
-Review checks: `.venv/bin/python -m pip check` reports no broken requirements;
-`node tests/test_reveal_ui.cjs` passes. Ignore rules were tested in a disposable
-Git repository: 21 representative private paths are excluded and eight required
-submission paths (including `.env.example`) remain included. A credential-format
-scan of reviewed submission text found no remaining matches; it is not a complete
-credential or Git-history audit.
-
-- Source dependencies and setup are documented above. Keep `.venv`, populated
-  `.env` files, `data/`, databases and their sidecars, OAuth token files, private
-  keys, logs, and archives out of submissions; `.gitignore` covers these paths.
-  `.env.example` is intentionally included with safe placeholders.
-- Credential-like values were removed from `.env.example` during review. Treat
-  the removed host password and provider/client secrets as exposed if valid:
-  rotate them privately before publishing. Changing the file or adding ignore
-  rules cannot remove secrets from earlier copies or Git history.
-- This workspace currently has no `.git` metadata, so tracked files, remotes,
-  and history could not be audited. Before publishing, initialize/review the
-  repository, inspect the staged file list, and scan any imported history for
-  secrets. Ignore rules do not untrack previously committed files. Do not submit
-  a raw folder archive containing private files.
-- Still needed for submission: the actual public repository URL, demo video,
-  genuine Codex session/build evidence, and confirmation of the applicable event
-  requirements. None were created, published, or pushed by this review.
-
-### Initial commit preparation
-
-The first-commit review identified 24 publishable files: backend and frontend
-source, both SVG assets, tests, documentation, requirements, `.gitignore`, and
-the sanitized `.env.example`. A value-redacting credential scan found no matches
-in that set. Exclusion checks passed for 23 representative private paths,
-including populated `.env` variants, OAuth/token exports, SQLite databases and
-sidecars, `.venv`, recordings, captures, and archives. Recordings and additional
-archive formats are now explicitly ignored. Keep any new private exports out
-of the repository and review future staged files before committing.
-
-Creating this workspace's `.git` directory was denied with “Operation not
-permitted” in the coding environment. No project repository, initial commit,
-remote, or push was created. The exclusion review used disposable temporary
-Git metadata only; it did not stage or commit project files. The earlier
-credential-rotation advice still applies to previously populated templates.
-
-## Dreamy OBS overlay — revision 20261102-dream1
-
-The OBS-only skin now matches the dashboard's lavender, purple, pink and teal
-palette, using the existing dreamscape and moon SVGs, stars, soft gradients and
-rounded cards. The story has a readable title and narration; three side-by-side
-choice cards show A/B/C, chat commands, actual counts, rounded percentages and
-vote bars. Countdown/status, chapter and resource values remain visible. The
-result uses the existing authoritative counts, deltas and full new memory facts
-with a restrained entrance animation and reduced-motion support. Host dashboard
-markup/styles and all backend/Twitch/authentication logic are unchanged.
-
-Narration starts at a viewport-appropriate size and shrinks only as needed to
-14 logical pixels; a final whole-layout fitting pass handles overflow without
-ellipsis, line clamps, scroll-only content or discarded facts. Existing backend
-narration limits (110 words / 1400 characters for provider text) are unchanged.
-The layout refits after font loading and resizing. Extreme content can require
-additional scaling; readability and fit need confirmation on the new OBS skin.
-
-**This revision's verification:** Node syntax and UI checks pass, including
-actual counts/percentages, reveal expiry, early approval, escaping and draft
-privacy. The Python run has 19 passes, six HTTP setup errors from denied socket
-binds, and one skipped Chrome layout class because headless Chrome cannot launch
-in this environment. Socket-free route/cache checks pass with the new revision.
-Browser tests now additionally check choice text/counts and resource/effect
-bounds, plus pending, voting and paused layouts at both target sizes. They could
-not execute here. The user's previous 27-test local success and manual OBS
-1000 × 550 evidence apply to **20261101-obs2**, not this restyle. Neither target
-size is claimed visually verified for **20261102-dream1** yet.
-
-To verify in a normal Mac terminal without accessing saved adventures:
-
-```bash
-.venv/bin/python -m unittest discover -s tests -v
-node tests/test_reveal_ui.cjs
-```
-
-To load this revision in OBS:
-
-1. In the terminal running the app, press **Ctrl+C**. Keep its existing exported
-   environment and database configuration, then run from this project directory:
-
-   ```bash
-   .venv/bin/python -m backend.server
-   ```
-
-   This restarts the same saved session; an active vote pauses on restart. Host
-   login is required again. Do not delete/reset the database or create a new one.
-2. Open `http://localhost:8080`, press **Command+Shift+R**, unlock, and choose
-   **Stream overlay → Copy URL**. Keep this authenticated read-only URL private.
-3. OBS → Browser Source → **Properties**: turn **Local file** off, paste the
-   copied URL, append **`&v=20261102-dream1`**, set **Width 1000 / Height 550**,
-   then click **Refresh cache of current page → OK**. Confirm the connection
-   badge shows **20261102-dream1**. Use the overlay URL, not the dashboard URL.
-4. Check any previous crop via **Transform → Reset Transform**, then position
-   the source as desired. Repeat with Browser Source **Width 1920 / Height 1080**;
-   the OBS output canvas size alone does not set this viewport.
-5. Keep the source visible and disable **Shutdown source when not visible**
-   during checks. Verify long narration, all three choices/counts/percentages,
-   resource values, result facts and deltas at both sizes. Close a vote, wait for
-   the reveal to expire, then approve. The old chapter must stay until approval;
-   approval during reveal must not shorten the saved seven-second result window.
-   Polling can delay first appearance by up to one normal 800 ms interval.
-
-No server restart, data deletion, commit or push was performed by this restyle.
+</div>
